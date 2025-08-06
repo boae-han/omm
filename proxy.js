@@ -67,36 +67,25 @@ app.get('/api/kakao/search', async (req, res) => {
     }
 });
 
-// 네이버 지도 API 프록시 (별점, 영업시간 정보 제공)
-app.get('/api/naver/map', async (req, res) => {
+app.get('/api/kakao/geo', async (req, res) => {
     try {
-        const { query } = req.query;
+        const { x, y } = req.query;
         
-        // 네이버 지도 API 호출 (실제로는 웹 스크래핑이 필요할 수 있음)
-        const response = await fetch(`https://map.naver.com/v5/api/search?query=${encodeURIComponent(query)}&type=place`, {
+        const params = new URLSearchParams({
+            x: x,
+            y: y
+        });
+
+        const response = await fetch(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?${params}`, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Referer': 'https://map.naver.com/'
+                'Authorization': `KakaoAK 28d0a1b4e9c46ef1292049a6555e8207`
             }
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            res.json(data);
-        } else {
-            // 지도 API가 실패하면 검색 API로 대체
-            const searchResponse = await fetch(`https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=1`, {
-                headers: {
-                    'X-Naver-Client-Id': 'Db98gzpzD4N9ljte2M1j',
-                    'X-Naver-Client-Secret': 'W7dckFhWdS'
-                }
-            });
-            
-            const searchData = await searchResponse.json();
-            res.json(searchData);
-        }
+        const data = await response.json();
+        res.json(data);
     } catch (error) {
-        console.error('네이버 지도 API 프록시 오류:', error);
+        console.error('카카오 API 프록시 오류:', error);
         res.status(500).json({ error: 'API 요청 실패' });
     }
 });
