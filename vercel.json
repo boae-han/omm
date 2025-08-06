@@ -11,10 +11,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "KAKAO_API_KEY": "@kakao_api_key",
-    "NAVER_CLIENT_ID": "@naver_client_id",
-    "NAVER_CLIENT_SECRET": "@naver_client_secret"
-  }
+  ]
 } 
