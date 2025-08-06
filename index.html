@@ -230,29 +230,103 @@
         }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                width: 100%;
+            }
+            
             .main-title {
-                font-size: 3rem;
+                font-size: 2.8rem;
+                margin-bottom: 3rem;
+                line-height: 1.1;
             }
             
             .subtitle {
                 font-size: 1.2rem;
+                margin-bottom: 2rem;
             }
             
             .roulette-container {
-                width: 400px;
-                height: 400px;
+                width: 280px;
+                height: 280px;
+                margin: 0 auto 3rem;
             }
             
             .roulette {
-                font-size: 18rem;
+                font-size: 12rem;
+                background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,182,193,0.3) 70%, rgba(255,105,180,0.2) 100%);
+                box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4), 
+                           inset 0 2px 10px rgba(255,255,255,0.8);
+                border: 3px solid rgba(255,105,180,0.1);
+            }
+            
+            .roulette:active {
+                transform: scale(0.95);
+                transition: transform 0.1s ease;
             }
             
             .roulette-text {
-                font-size: 1.8rem;
+                font-size: 1.4rem;
+                bottom: 15px;
+                color: #FF69B4;
+                font-weight: 700;
+                text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
             }
             
             .result-display {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
+                padding: 1.5rem;
+                margin-top: 2rem;
+                border-radius: 20px;
+                background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,182,193,0.1) 100%);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                backdrop-filter: blur(10px);
+            }
+            
+            .result-display.show {
+                animation: slideUpFade 0.5s ease-out;
+            }
+            
+            .falling-food {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 2.2rem;
+                margin-bottom: 2rem;
+            }
+            
+            .roulette-container {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .roulette {
+                font-size: 10rem;
+            }
+            
+            .roulette-text {
+                font-size: 1.2rem;
+                bottom: 12px;
+            }
+            
+            .result-display {
+                font-size: 1.4rem;
+                padding: 1rem;
+                margin-top: 1.5rem;
+            }
+        }
+        
+        @keyframes slideUpFade {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
@@ -518,8 +592,10 @@
                 rouletteText.textContent = '클릭!';
                 
                 // 결과 표시
+                result.classList.remove('show');
                 if (selectedChoice.type === 'restaurant') {
                     result.innerHTML = '<div class="loading">🍴 맛집 찾는 중...</div>';
+                    result.classList.add('show');
                     
                     // 위치 정보 확인
                     if (!currentLocation) {
@@ -527,6 +603,7 @@
                             await getCurrentLocation();
                         } catch (error) {
                             result.innerHTML = '<div class="restaurant-info"><div class="restaurant-name">⚠️ 위치 정보 필요</div><div class="restaurant-details">위치 권한을 허용해주세요.<br>맛집 추천을 위해 현재 위치가 필요합니다.</div></div>';
+                            result.classList.add('show');
                             roulette.style.pointerEvents = 'auto';
                             isSpinning = false;
                             return;
@@ -582,15 +659,18 @@
                                 </button>
                             </div>
                         `;
+                        result.classList.add('show');
                     } catch (error) {
                         if (error.message.includes('이용 가능한 맛집이 없습니다')) {
                             result.innerHTML = '<div class="restaurant-info"><div class="restaurant-name">😔 이용 가능한 맛집이 없어요</div><div class="restaurant-details">마감이 임박했거나 영업중인 곳이 없습니다.<br>다시 돌려보세요!</div></div>';
                         } else {
                             result.innerHTML = '<div class="restaurant-info"><div class="restaurant-name">⚠️ 맛집 검색 실패</div><div class="restaurant-details">네트워크 오류가 발생했습니다.<br>다시 시도해주세요.</div></div>';
                         }
+                        result.classList.add('show');
                     }
                 } else {
                     result.innerHTML = `${selectedChoice.emoji}${selectedChoice.message}${selectedChoice.emoji}`;
+                    result.classList.add('show');
                 }
                 
                 roulette.style.pointerEvents = 'auto';
