@@ -1,7 +1,6 @@
 # API 키 파일
 .env
 *.env
-config.js
 
 # 로그 파일
 *.log
