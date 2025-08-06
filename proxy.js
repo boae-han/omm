@@ -3,14 +3,11 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 
 const app = express();
-const PORT = 8080; // 3001에서 8080으로 변경
+const PORT = 8000;
 
 // CORS 설정
 app.use(cors());
 app.use(express.json());
-
-// 정적 파일 서빙
-app.use(express.static('.'));
 
 // 네이버 API 프록시
 app.get('/api/naver/search', async (req, res) => {
@@ -89,6 +86,12 @@ app.get('/api/kakao/geo', async (req, res) => {
         res.status(500).json({ error: 'API 요청 실패' });
     }
 });
+
+// favicon.ico 404 에러 방지
+app.get('/favicon.ico', (req, res) => res.status(204).send());
+
+// 정적 파일 서빙
+app.use(express.static('.'));
 
 app.listen(PORT, () => {
     console.log(`프록시 서버가 http://localhost:${PORT}에서 실행 중입니다.`);
