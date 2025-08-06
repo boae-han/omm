@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맛집 룰렛 - 오늘 뭐 먹지?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Gaegu', cursive;
+            background: linear-gradient(135deg, #FFD9EC 0%, #E6D9FF 25%, #D9FFEC 50%, #FFEAD9 75%, #FFF5D9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            color: #FF69B4;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 0px rgba(255, 255, 255, 0.8);
+            transform: rotate(-2deg);
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #9B59B6;
+            margin-bottom: 3rem;
+            transform: rotate(1deg);
+        }
+
+        .roulette-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 2rem;
+        }
+
+        .roulette {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            transition: transform 3s ease-out;
+            background: conic-gradient(
+                #FF6B6B 0deg 54deg,    /* 굶어 15% */
+                #4ECDC4 54deg 90deg,   /* 라면 10% */
+                #45B7D1 90deg 126deg,  /* 집밥 10% */
+                #96CEB4 126deg 360deg  /* 맛집 65% */
+            );
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .roulette:hover {
+            transform: scale(1.05);
+        }
+
+        .roulette.spinning {
+            animation: spin 3s ease-out;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .roulette-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .spin-button {
+            background: linear-gradient(45deg, #FF69B4, #FF1493);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-family: 'Gaegu', cursive;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .spin-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        .spin-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-display {
+            min-height: 100px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FF1493;
+            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .restaurant-info {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .restaurant-name {
+            font-size: 1.8rem;
+            color: #FF1493;
+            margin-bottom: 0.5rem;
+        }
+
+        .restaurant-details {
+            font-size: 1.2rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .loading {
+            font-size: 1.5rem;
+            color: #9B59B6;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .roulette-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .roulette-text {
+                font-size: 1.5rem;
+            }
+            
+            .result-display {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">오늘 뭐 먹지?</h1>
+        <p class="subtitle">룰렛을 돌려보세요! 🎯</p>
+        
+        <div class="roulette-container">
+            <div class="roulette" id="roulette">
+                <div class="roulette-text" id="rouletteText">클릭!</div>
+            </div>
+        </div>
+        
+        <button class="spin-button" id="spinButton" onclick="spinRoulette()">
+            식사 룰렛 돌리기
+        </button>
+        
+        <div class="result-display" id="result">
+        </div>
+    </div>
+
+    <script>
+        // 룰렛 선택지 정의 (PRD 기반)
+        const choices = [
+            { name: '굶어', weight: 15, type: 'skip', emoji: '🚫', message: '굶어!' },
+            { name: '라면', weight: 10, type: 'ramen', emoji: '🍜', message: '라면' },
+            { name: '집밥', weight: 10, type: 'home', emoji: '🍚', message: '냉장고 털어요' },
+            { name: '맛집', weight: 65, type: 'restaurant', emoji: '🍴', message: '맛집 찾는 중...' }
+        ];
+
+        let isSpinning = false;
+        let currentLocation = null;
+
+        // 카카오 로컬 API 설정
+        const KAKAO_API_KEY = 'YOUR_KAKAO_API_KEY'; // 실제 API 키로 교체 필요
+        const KAKAO_API_URL = 'https://dapi.kakao.com/v2/local/search/keyword.json';
+
+        // 카카오 API로 음식점 검색
+        async function searchRestaurants(lat, lng, radius = 1000) {
+            try {
+                const params = new URLSearchParams({
+                    query: '음식점',
+                    x: lng,      // 경도
+                    y: lat,      // 위도  
+                    radius: radius,
+                    size: 15,    // 최대 15개
+                    category_group_code: 'FD6'  // 음식점 카테고리
+                });
+
+                const response = await fetch(`${KAKAO_API_URL}?${params}`, {
+                    headers: {
+                        'Authorization': `KakaoAK ${KAKAO_API_KEY}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 요청 실패: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.documents || [];
+            } catch (error) {
+                console.error('음식점 검색 실패:', error);
+                throw error;
+            }
+        }
+
+        // 영업시간 파싱 및 체크
+        function parseOpeningHours(openingHours) {
+            if (!openingHours) return null;
+            
+            // 예시: "09:00~22:00"
+            const match = openingHours.match(/(\d{2}):(\d{2})~(\d{2}):(\d{2})/);
+            if (match) {
+                const openHour = parseInt(match[1]);
+                const openMinute = parseInt(match[2]);
+                const closeHour = parseInt(match[3]);
+                const closeMinute = parseInt(match[4]);
+                
+                return {
+                    open: openHour * 60 + openMinute,
+                    close: closeHour * 60 + closeMinute
+                };
+            }
+            return null;
+        }
+
+        // 현재 영업중인지 확인 (마감 1시간 전까지만)
+        function isRestaurantAvailable(restaurant, currentTime) {
+            const hours = parseOpeningHours(restaurant.opening_hours);
+            if (!hours) return true; // 영업시간 정보가 없으면 기본적으로 이용 가능
+            
+            const oneHourBeforeClosing = hours.close - 60;
+            
+            return currentTime >= hours.open && currentTime <= oneHourBeforeClosing;
+        }
+
+        // 랜덤 맛집 선택
+        async function getRandomRestaurant(lat, lng) {
+            try {
+                // 현재 시간
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMinutes = now.getMinutes();
+                const currentTime = currentHour * 60 + currentMinutes; // 분으로 변환
+                
+                // 카카오 API로 1km 내 모든 음식점 검색
+                const allRestaurants = await searchRestaurants(lat, lng, 1000);
+                
+                // 영업중 + 마감 1시간 전까지만 필터링
+                const availableRestaurants = allRestaurants.filter(restaurant => {
+                    return isRestaurantAvailable(restaurant, currentTime);
+                });
+                
+                if (availableRestaurants.length === 0) {
+                    throw new Error('현재 이용 가능한 맛집이 없습니다');
+                }
+                
+                // 필터링된 결과에서 랜덤 선택
+                const randomIndex = Math.floor(Math.random() * availableRestaurants.length);
+                return availableRestaurants[randomIndex];
+            } catch (error) {
+                console.error('맛집 선택 실패:', error);
+                throw error;
+            }
+        }
+
+        // 지도보기 기능
+        function openMap(placeName, x, y) {
+            // 카카오맵으로 열기
+            const url = `https://map.kakao.com/link/map/${placeName},${y},${x}`;
+            window.open(url, '_blank');
+        }
+
+        // 위치 정보 가져오기
+        function getCurrentLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation이 지원되지 않습니다.'));
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        currentLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        };
+                        console.log('현재 위치:', currentLocation);
+                        resolve(currentLocation);
+                    },
+                    (error) => {
+                        console.error('위치 정보 가져오기 실패:', error);
+                        reject(error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000
+                    }
+                );
+            });
+        }
+
+        // 위치 권한 요청 및 확인
+        async function requestLocationPermission() {
+            try {
+                await getCurrentLocation();
+                return true;
+            } catch (error) {
+                console.error('위치 권한 오류:', error);
+                return false;
+            }
+        }
+
+        // 페이지 로드 시 위치 권한 요청
+        window.addEventListener('load', async () => {
+            const hasLocation = await requestLocationPermission();
+            if (!hasLocation) {
+                console.log('위치 권한이 거부되었습니다. 맛집 기능은 제한됩니다.');
+            }
+        });
+
+        function weightedRandom(choices) {
+            const totalWeight = choices.reduce((sum, choice) => sum + choice.weight, 0);
+            let random = Math.random() * totalWeight;
+            
+            for (let choice of choices) {
+                random -= choice.weight;
+                if (random <= 0) return choice;
+            }
+            return choices[choices.length - 1]; // fallback
+        }
+
+        async function spinRoulette() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            const roulette = document.getElementById('roulette');
+            const rouletteText = document.getElementById('rouletteText');
+            const spinButton = document.getElementById('spinButton');
+            const result = document.getElementById('result');
+            
+            // 버튼 비활성화
+            spinButton.disabled = true;
+            spinButton.textContent = '돌리는 중...';
+            
+            // 룰렛 회전 애니메이션
+            roulette.classList.add('spinning');
+            rouletteText.textContent = '돌아가는중...';
+            
+            // 랜덤 선택
+            const selectedChoice = weightedRandom(choices);
+            
+            setTimeout(async () => {
+                roulette.classList.remove('spinning');
+                rouletteText.textContent = selectedChoice.emoji;
+                
+                // 결과 표시
+                if (selectedChoice.type === 'restaurant') {
+                    result.innerHTML = '<div class="loading">🍴 맛집 찾는 중...</div>';
+                    
+                    // 위치 정보 확인
+                    if (!currentLocation) {
+                        try {
+                            await getCurrentLocation();
+                        } catch (error) {
+                            result.innerHTML = '<div class="restaurant-info"><div class="restaurant-name">⚠️ 위치 정보 필요</div><div class="restaurant-details">위치 권한을 허용해주세요.<br>맛집 추천을 위해 현재 위치가 필요합니다.</div></div>';
+                            spinButton.disabled = false;
+                            spinButton.textContent = '다시 돌리기';
+                            isSpinning = false;
+                            return;
+                        }
+                    }
+                    
+                    // 실제 맛집 API 호출
+                    try {
+                        const restaurant = await getRandomRestaurant(currentLocation.latitude, currentLocation.longitude);
+                        
+                        // 거리 계산 (간단한 버전)
+                        const distance = Math.round(Math.random() * 800 + 200); // 임시 거리
+                        
+                        // 마감시간 계산
+                        const hours = parseOpeningHours(restaurant.opening_hours);
+                        let closingTime = '정보 없음';
+                        if (hours) {
+                            const closeHour = Math.floor(hours.close / 60);
+                            const closeMinute = hours.close % 60;
+                            closingTime = `${closeHour.toString().padStart(2, '0')}:${closeMinute.toString().padStart(2, '0')}`;
+                        }
+                        
+                        result.innerHTML = `
+                            <div class="restaurant-info">
+                                <div class="restaurant-name">🍴 ${restaurant.place_name}</div>
+                                <div class="restaurant-details">
+                                    📍 ${restaurant.road_address_name || restaurant.address_name} (${distance}m)<br>
+                                    ⭐ ${restaurant.rating || 'N/A'} | 🕒 ${closingTime} 마감<br>
+                                    ☎️ ${restaurant.phone || '번호 없음'}
+                                </div>
+                                <button onclick="openMap('${restaurant.place_name}', ${restaurant.x}, ${restaurant.y})" 
+                                        style="margin-top: 1rem; padding: 0.5rem 1rem; background: #FF69B4; color: white; border: none; border-radius: 10px; cursor: pointer;">
+                                    🗺️ 지도보기
+                                </button>
+                            </div>
+                        `;
+                    } catch (error) {
+                        if (error.message.includes('이용 가능한 맛집이 없습니다')) {
+                            result.innerHTML = '<div class="restaurant-info"><div class="restaurant-name">😔 이용 가능한 맛집이 없어요</div><div class="restaurant-details">마감이 임박했거나 영업중인 곳이 없습니다.<br>다시 돌려보세요!</div></div>';
+                        } else {
+                            result.innerHTML = '<div class="restaurant-info"><div class="restaurant-name">⚠️ 맛집 검색 실패</div><div class="restaurant-details">네트워크 오류가 발생했습니다.<br>다시 시도해주세요.</div></div>';
+                        }
+                    }
+                } else {
+                    result.innerHTML = `${selectedChoice.emoji}${selectedChoice.message}${selectedChoice.emoji}`;
+                }
+                
+                // 버튼 복원
+                spinButton.disabled = false;
+                spinButton.textContent = '다시 돌리기';
+                isSpinning = false;
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 
