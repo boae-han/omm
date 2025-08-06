@@ -8,14 +8,20 @@
     "dev": "nodemon proxy.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.18.2",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
   },
-  "keywords": ["restaurant", "roulette", "food", "korean"],
+  "keywords": [
+    "restaurant",
+    "roulette",
+    "food",
+    "korean"
+  ],
   "author": "Your Name",
   "license": "MIT"
-} 
+}
