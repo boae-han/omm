@@ -25,13 +25,13 @@
 - **Frontend**: HTML5, CSS3, JavaScript (바닐라)
 - **API**: 카카오 로컬 API (음식점 검색)
 - **위치**: Geolocation API
-- **배포**: GitHub Pages
+- **배포**: Vercel
 
 ## 📋 설치 및 실행
 
 ### 1. 프로젝트 클론
 ```bash
-git clone [repository-url]
+git clone https://github.com/boae-han/omm.git
 cd restaurant-roulette
 ```
 
@@ -100,4 +100,4 @@ MIT License
 
 ---
 
-**"오늘 뭐 먹지?" 고민을 이제 끝내세요! 🍽️** 
+**"오늘 뭐 먹지?" 고민을 이제 끝내세요! 🍽️**
